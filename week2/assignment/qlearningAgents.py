@@ -59,11 +59,14 @@ class QLearningAgent(ReinforcementAgent):
     #If there are no legal actions, return 0.0
     if len(possibleActions) == 0:
     	return 0.0
+    # maxQ=0
+    # for action in possibleActions:
+    #   tempQ = getQValue(state, action)
+    #   if  tempQ> maxQ:
+    #     maxQ = tempQ
 
-    "*** YOUR CODE HERE ***"
-    raise NotImplementedError
-
-    return 0.
+    maxQ = max([self.getQValue(state, action) for action in possibleActions])
+    return maxQ
     
   def getPolicy(self, state):
     """
@@ -76,12 +79,10 @@ class QLearningAgent(ReinforcementAgent):
     if len(possibleActions) == 0:
     	return None
     
-    best_action = None
+    # maxQ = self.getValue(state)
+    # best_action = [action for action in possibleActions if self.getQValue(state, action) == maxQ][0]
 
-    "*** YOUR CODE HERE ***"
-    raise NotImplementedError
-
-    return best_action
+    return max(possibleActions, key = lambda action: self.getQValue(state,action))
 
   def getAction(self, state):
     """
@@ -97,7 +98,7 @@ class QLearningAgent(ReinforcementAgent):
     
     # Pick Action
     possibleActions = self.getLegalActions(state)
-    action = None
+    # action = None
     
     #If there are no legal actions, return None
     if len(possibleActions) == 0:
@@ -106,10 +107,10 @@ class QLearningAgent(ReinforcementAgent):
     #agent parameters:
     epsilon = self.epsilon
 
-    "*** YOUR CODE HERE ***"
-    raise NotImplementedError    
-
-    return action
+    if random.random() >self.epsilon:
+      return self.getPolicy(state)
+    else:
+      return random.choice(possibleActions)
 
   def update(self, state, action, nextState, reward):
     """
@@ -123,14 +124,11 @@ class QLearningAgent(ReinforcementAgent):
     #agent parameters
     gamma = self.discount
     learning_rate = self.alpha
-    
-    "*** YOUR CODE HERE ***"
-    raise NotImplementedError
-    
-    reference_qvalue = PleaseImplementMe
-    updated_qvalue = PleaseImplementMe
 
-    self.setQValue(PleaseImplementMe,PleaseImplementMe,updated_qvalue)
+    reference_qvalue = reward + gamma*self.getValue(nextState)
+    updated_qvalue = (1-learning_rate)*self.getQValue(state,action)+learning_rate*reference_qvalue
+
+    self.setQValue(state,action,updated_qvalue)
 
 
 #---------------------#end of your code#---------------------#
